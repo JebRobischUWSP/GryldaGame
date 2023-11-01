@@ -1,0 +1,6 @@
+Hey! I like to keep notes in a text file while coding.
+
+Functions:
+Input - Takes input() string, returns int, attempts to get int from input, automatically retries if not int
+DieRoll - Takes bonus, returns int [1,20], rolls a d20, add modifiers, and clamps
+QuitGame - Takes gameover message, provides message, awaits input, then closes program.
