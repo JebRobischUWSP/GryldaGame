@@ -4,3 +4,9 @@ Functions:
 Input - Takes input() string, returns int, attempts to get int from input, automatically retries if not int
 DieRoll - Takes bonus, returns int [1,20], rolls a d20, add modifiers, and clamps
 QuitGame - Takes gameover message, provides message, awaits input, then closes program.
+
+Functionality:
+Before entering a room, you get description of unknown, dingy door. After exploring a room, descriptions of ways to it give a short blurb of "To the Kitchen" or etc.
+
+
+Wy doesn't pyhon have switch statements? :(
