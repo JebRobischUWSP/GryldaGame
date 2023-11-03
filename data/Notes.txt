@@ -8,5 +8,6 @@ QuitGame - Takes gameover message, provides message, awaits input, then closes p
 Functionality:
 Before entering a room, you get description of unknown, dingy door. After exploring a room, descriptions of ways to it give a short blurb of "To the Kitchen" or etc.
 
+I have removed some room numbers from descriptions (where reasonable) as I include the current one before your actions and the one of the next room in the action text.
 
-Wy doesn't pyhon have switch statements? :(
+Why doesn't pyhon have switch statements? :(
