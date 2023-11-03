@@ -8,13 +8,14 @@ random.seed()
 #Flags
 knownRooms = [None, True, False, False, False, False]; #Index corresponds to room number, once True, text will reflect knowlege of room behind door.
 tableSearched = False; # Gives +1 Bonus
-chestFound = False;
 grylaDead = False;
 gotKey = False;
 
 #Stats
 currentRoom = 1;
 gameState = 0; # Tracks current state: 0-explore, 1-battleGryla
+battleState = 0; # 0-notFighting, 1-fighting
+grylaHealth = 2; # 20+ damages all 2, 1- 'heals' to 2
 
 #General Functions
 def GetIntInput(message, min, max): #Gets & returns input as int bounded by [min,max]. If input fails, retry until it succeeds.
@@ -126,34 +127,57 @@ try:
                     elif userIn == 2:
                         currentRoom = 4;
             elif currentRoom == 3:
-                #Introduce Room
+                DisplayTextData('3kitchen');
                 print("You are currently in the Kitchen (Room 3)\n");
                 print(  FormatActions("Search the Room", GetTravelActionText(2), GetTravelActionText(5))  );
                 userIn = GetIntInput("Choose an action: ", 1, 3);
                 if userIn == 1:
-                    _=_
-                    #Do search logic
+                    _ = os.system('cls');
+                    if random.randint(1,100) == 100:
+                        print("You search around the room, and find 1gp! Lucky you!\n\n");
+                    else:
+                        print("You search around, but find nothing of value.\n\n");
+                    pause();
                 elif userIn == 2:
                     currentRoom = 2;
                 elif userIn == 3:
                     currentRoom = 5;
             elif currentRoom == 4:
-                #Introduce room
+                DisplayTextData('4bedroom');
                 print("You are currently in the Bedroom (Room 4)\n");
                 print(  FormatActions("Search the Room", GetTravelActionText(2), "Try to Open the Chest")  );
                 userIn = GetIntInput("Choose an action: ", 1, 3);
                 if userIn == 1:
-                    _=_
-                    #Do search logic
+                    _ = os.system('cls');
+                    if random.randint(1,100) == 100: # Lucky penny!
+                        print("You search around the room, and find 1gp!\nLucky you!\n\n");
+                    else:
+                        print("You search around, but find nothing of value.\n\n");
+                    pause();
                 elif userIn == 2:
                     currentRoom = 2;
                 elif userIn == 3:
                     _=_
                     #Do chest open logic
             elif currentRoom == 5:
-                _ = _
+                if not grylaDead:
+                    DisplayTextData('5cellar');
+                    input("Press Enter to start the battle! ");
+                    gameState = 1;
         elif gameState == 1:
-            _ = _
+            if battleState == 0:
+                print("You are facing Grÿla, the witch of your nightmares!\n\n");
+                print(  FormatActions("Fight the Witch!", "Confront your fear!", "Look for her weaknesses!")  );
+                userIn = GetIntInput("Choose an action: ", 1, 3);
+                if userIn == 1:
+                    _=_
+                elif userIn == 2:
+                    _ = os.system('cls');
+                    print("You don't fear her! You don't fear anything!\nYou yell out to Gryla, confronting her with the power of your confidence!\n\n");
+                    input("Press Enter to roll for Charisma.");
+                    #Roll dice
+                elif userIn == 3:
+                    _=_
         else:
             GameOver('ERROR: Game entered a nonexistant state, ' + str(gameState));
 except Exception as error:
@@ -163,12 +187,25 @@ APPROVED CONCEPTS
 io library to display unicode (Mainly umlaut y)
 os.system to clear the terminal
 functions (just in general)
-
-UNAPPROVED CONCEPTS
 Capturing an exception's text in an try/except
 Hinting at the existence of the fireplace in room 3 before entering it
+Unpacking operator 
 Occasionally giving the player a "lucky 1gp" when doing either of the 2 repeatable search actions (Not implemented yet)
 Closing opened files (Prevent Memory Leaks)
 Using min() and max() (Not actually used UNLESS I add die roll clamping)
+
+UNAPPROVED CONCEPTS
 Snarky code comments
+"""
+
+"""
+DOCUMENTATION
+Written in Notepad++, Tested in Powershell & Command Prompt
+Only major difference using IDLE is that the console won't clear from os.system('clr')
+
+For the fight, how I interpret it: 20 or more (5%, or 10% with table item) is a hit so powerful that you defeat Gryla right then and there.
+1 or less (since you cannot get a negative modifier for the fight specifically (and the other possiblities don't have crit fail conditions) is considered a "heal" turn for Grylda, which will bring her back to 2 hp (each hit is 1 hp)
+So, treating it like this give the player a net benefit, and since critical conditions don't exist for other fight actions, it otherwise doesn't matter.
+
+_=_ is a placholder so that python doesn't throw a fit over an if/elif/else block not having any body
 """
