@@ -8,6 +8,8 @@ random.seed()
 #Flags
 knownRooms = [None, True, False, False, False, False]; #Index corresponds to room number, once True, text will reflect knowlege of room behind door.
 tableSearched = False; # Gives +1 Bonus
+grylaConfronted = False;
+grylaPercieved = False;
 grylaDead = False;
 gotKey = False;
 
@@ -15,14 +17,18 @@ gotKey = False;
 currentRoom = 1;
 gameState = 0; # Tracks current state: 0-explore, 1-battleGryla
 battleState = 0; # 0-notFighting, 1-fighting
-grylaHealth = 2; # 20+ damages all 2, 1- 'heals' to 2
+grylaHealth = 2; # 20+ sets to 0 (aka -2, double damage), 1- sets to 2 (heal)
 
 #General Functions
-def GetIntInput(message, min, max): #Gets & returns input as int bounded by [min,max]. If input fails, retry until it succeeds.
+def GetIntInput(message, min, max, disclude=None): #Gets & returns input as int bounded by [min,max]. If input fails, retry until it succeeds. If it matches a 'discluded' value (list of int), return None
     result = input(message);
     while(True):
         try:
             result = int(result);
+            if disclude != None:
+                for val in disclude:
+                    if result == val:
+                        return None;
             if min == None or result >= min:
                 if max == None or result <= max:
                     break;
@@ -80,6 +86,15 @@ def DisplayTextData(fileName):
     print(openFile.read());
     openFile.close();
 
+def KillGryl(message): #I didn't really need to make this a function, but I just came up with the pun and it was too good to pass up.
+    global grylaDead, gotKey, gameState;
+    print('\n' + message + '\n');
+    print("You have successfully overcame your fears and have beaten Grÿla!\nWhat's this? As she disintegrates, you notice a small, metal object. A key!\nYou should figure out what this unlocks before leaving. A witch as powerful as Grÿla must have something valuable lying around.\n");
+    grylaDead = True; # I could've probably just used one flag for this, but whatever.
+    gotKey = True;
+    gameState = 0; # What's up with python and locally scoping global varibles in functions??? If I'm changing a global variable, I want to change a global variable.
+    pause();
+
 _ = os.system('cls'); #Clears without printing code
 
 #Present Scenario
@@ -118,7 +133,7 @@ try:
                         print("You found a small ring with a glowing enchanment!\nIt produces 5ft of dim light in a sphere around you when in unlit areas.\nIn turn, you get +1 to any attack rolls against enemies accustomed to dark environemnts.\n\n")
                         # This item is supposed to play into the facing your fears thing; a gift of light to help face your fear of the dark (with darkness as a theme here, I imagine one of the intended faced fears is of the dark)
                         pause();
-                else: # You can't search the table again. Sorry!
+                else: # You can't search the table again. Sucks.
                     print("You are currently in the Central Room (Room 2)\n");
                     print(  FormatActions(GetTravelActionText(3), GetTravelActionText(4))  );
                     userIn = GetIntInput("Choose an action: ", 1, 2);
@@ -158,26 +173,81 @@ try:
                     currentRoom = 2;
                 elif userIn == 3:
                     _=_
-                    #Do chest open logic
+                    #TODO chest open logic
             elif currentRoom == 5:
                 if not grylaDead:
                     DisplayTextData('5cellar');
                     input("Press Enter to start the battle! ");
                     gameState = 1;
+                else:
+                    DisplayTextData('5cellarpostfight');
+                    print("You are currently in the Cellar (Room 5)\n");
+                    print(  FormatActions(GetTravelActionText(3))  );
+                    userIn = GetIntInput("Choose an action: ", 1, 1); #I find this alarmingly funny. Yeah, there's a list of possible actions. Yeah, it's one action. Yeah, you still need to select the action.
+                    if userIn == 1:
+                        currentRoom = 3;
+                    else:
+                        print("What??? Huh??? How???");
         elif gameState == 1:
             if battleState == 0:
                 print("You are facing Grÿla, the witch of your nightmares!\n\n");
+                if grylaConfronted and grylaPercieved:
+                    print("You have no other choice. You must fight her!\n");
+                    print(  FormatActions("Fight the Witch!", "It's no use; Run!")  );
+                    userIn = GetIntInput("Choose an action: ", 1, 2);
+                    if userIn == 1:
+                        battleState = 1;
+                        pause();
+                        continue; # Reset game loop to switch to fighting state
+                    elif userIn == 2:
+                        GameOver("With 2 failiures under your belt and little confidence in your ability to confront Grÿla, you turn tail and run.\nAs you burst out of the hut, you hear wicked cackling from the cellar.\nThis will not be the last you hear of this wicked witch.\nGAME OVER\n\nTip: Gryla is strong against pacifist techniques. Fighting is bound to be more effective, especially if you search around a bit beforehand.");
                 print(  FormatActions("Fight the Witch!", "Confront your fear!", "Look for her weaknesses!")  );
-                userIn = GetIntInput("Choose an action: ", 1, 3);
+                discluded = [] if not grylaConfronted else [2]; # Setup the disclude list in case players already did the other options. Much easier than writing out this section again for each permutation.
+                discluded += [] if not grylaPercieved else [3];
+                userIn = None;
+                while(True):
+                    userIn = GetIntInput("Choose an action: ", 1, 3, disclude=discluded);
+                    if userIn != None:
+                        break;
+                    else:
+                        print("That didn't work! You have to try something else.");
                 if userIn == 1:
-                    _=_
+                    print("You ready your weapon... it's time to fight Grÿla head-on!\n");
+                    battleState = 1;
+                    pause(); #Bit janky of a way to do it, requiring a pause here, but otherwise players couldn't read this line, and there's not an easy way i can think of to switch states with an attack round
                 elif userIn == 2:
                     _ = os.system('cls');
-                    print("You don't fear her! You don't fear anything!\nYou yell out to Gryla, confronting her with the power of your confidence!\n\n");
-                    input("Press Enter to roll for Charisma.");
-                    #Roll dice
+                    print("You don't fear her! You don't fear anything!\nYou yell out to Grÿla, confronting her with the power of your confidence!\n\n");
+                    input("Press Enter to roll for Intimidation.");
+                    plrDieMod, plrDie = RollD20();
+                    grylaDieMod, grylaDie = RollD20(mod = 4);
+                    print("\nYou rolled " + str(plrDieMod) + " (" + str(plrDie) + "+0)");
+                    print("Grÿla rolled " + str(grylaDieMod) + " (" + str(grylaDie) + "+4)");
+                    if plrDieMod > grylaDieMod: #Note wording in assignment: "If the player rolls HIGHER", not higher or equal.
+                        KillGryl("You let it be known that you do not fear her! She has no power on you! She may be terrifying, but she cannot hurt you!\nHearing these words, Gryla siezes and slowly petrifies, crumbling to powerless ash.");
+                        # Get wicked witch of the west'd, gryllo! (Not really, it's to dust instead of melting, but whatever)
+                    else:
+                        print("You try to convince her of your fearlessness, but it doesn't work.\nShe stands as haughtily as ever, confident in her grip over your mind.\n");
+                        grylaConfronted = True;
+                        pause();
                 elif userIn == 3:
-                    _=_
+                    _ = os.system('cls');
+                    print("You examine the witch a little more closely, trying to find any exploitable weaknesses.\n\n");
+                    input("Press Enter to roll for Perception.");
+                    plrDieMod, plrDie = RollD20();
+                    grylaDieMod, grylaDie = RollD20(mod = -2);
+                    print("\nYou rolled " + str(plrDieMod) + " (" + str(plrDie) + "+0)");
+                    print("Grÿla rolled " + str(grylaDieMod) + " (" + str(grylaDie) + "-2)");
+                    if plrDieMod > grylaDieMod: #"If the player wins" is annoyingly vauge for a description that specified the exact operator ('>') only 3 sentences before
+                        KillGryl("Looking more closely, you notice that Gryla is unusually unwell. You ask her about her health, and she suddenly softens, claiming that she's been cursed to stay in the mortal plane, bound to cruelly haunt adventurers for centuries.\nYou know some curse-breaking! You offer to help, and she begrudgingly accepts.\nThe curse proves difficult to defeat, but you manage, and Gryla starts to fade, giving apologies for all the harm she's caused.");
+                    else:
+                        print("Drats! You can't find anything particularly weak about her. You figure your best bet is to attack before she can get the upper hand.");
+                        grylaPercieved = True;
+                        pause();
+            elif battleState == 1:
+                print("You attack! Roll an attack die.");
+            else:
+                GameOver('ERROR: Game entered a nonexistant battleState, ' + str(battleState));
         else:
             GameOver('ERROR: Game entered a nonexistant state, ' + str(gameState));
 except Exception as error:
@@ -195,6 +265,8 @@ Closing opened files (Prevent Memory Leaks)
 Using min() and max() (Not actually used UNLESS I add die roll clamping)
 
 UNAPPROVED CONCEPTS
+"Global" keyword
+Ternary Operator (It's not nessecary, but I love inline if statements for reasons I cannot understand. Also, one of the few chances I get to make my code more concise)
 Snarky code comments
 """
 
@@ -205,7 +277,10 @@ Only major difference using IDLE is that the console won't clear from os.system(
 
 For the fight, how I interpret it: 20 or more (5%, or 10% with table item) is a hit so powerful that you defeat Gryla right then and there.
 1 or less (since you cannot get a negative modifier for the fight specifically (and the other possiblities don't have crit fail conditions) is considered a "heal" turn for Grylda, which will bring her back to 2 hp (each hit is 1 hp)
+The 'heal turn' causes a requirement of >= 3 hits, and is a lot more sensical to implement (Otherwise, crit fail activates only once? That's not ineresting at all).
+    Also, Grÿla doesn't attack on heal turns, to make them a little more fair if the player has REALLY bad luck.
 So, treating it like this give the player a net benefit, and since critical conditions don't exist for other fight actions, it otherwise doesn't matter.
+EXTRA NOTE: Actually, since it's possible to have either +0 or +1, it may be impossible to crit fail. SO, instead, crit fails work off of the unmodified roll, but crit successes are still with modifiers.
 
 _=_ is a placholder so that python doesn't throw a fit over an if/elif/else block not having any body
 """
