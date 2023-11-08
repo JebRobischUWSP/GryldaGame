@@ -12,6 +12,8 @@ grylaConfronted = False;
 grylaPercieved = False;
 grylaDead = False;
 gotKey = False;
+keyBit1 = False;
+keyBit2 = False;
 
 #Stats
 currentRoom = 1;
@@ -149,11 +151,25 @@ try:
                 userIn = GetIntInput("Choose an action: ", 1, 3);
                 if userIn == 1:
                     _ = os.system('cls');
-                    if random.randint(1,100) == 100:
-                        print("You search around the room, and find 1gp! Lucky you!\n\n");
+                    if gotKey and not keyBit2:
+                        print("You search around for one of the missing key bits...\n");
+                        input("Press Enter to roll for Perception. ")
+                        plrDie = RollD20();
+                        print("\nYou rolled " + str(plrDie));
+                        if plrDie > 10:
+                            print("A-ha! That's one of the bits!");
+                            if not keyBit1:
+                                print("You should go look somewhere else for the other bit.");
+                            else:
+                                print("You have all the bits! Let's go unlock that chest!");
+                            keyBit2 = True;
+                        else:
+                            print("Nothing. Maybe you need to look a little closer?");
                     else:
-                        print("You search around, but find nothing of value.\n\n");
-                    pause();
+                        if random.randint(1,100) == 100: # Lucky penny! Not a perception roll, just an easter egg
+                            print("You search around the room, and find 1gp!\nLucky you!\n\n");
+                        else:
+                            print("You search around, but find nothing of value.\n\n");
                 elif userIn == 2:
                     currentRoom = 2;
                 elif userIn == 3:
@@ -165,20 +181,43 @@ try:
                 userIn = GetIntInput("Choose an action: ", 1, 3);
                 if userIn == 1:
                     _ = os.system('cls');
-                    if random.randint(1,100) == 100: # Lucky penny!
-                        print("You search around the room, and find 1gp!\nLucky you!\n\n");
+                    if gotKey and not keyBit1:
+                        print("You search around for one of the missing key bits...\n");
+                        input("Press Enter to roll for Perception. ")
+                        plrDie = RollD20();
+                        print("\nYou rolled " + str(plrDie));
+                        if plrDie > 10:
+                            print("A-ha! That's one of the bits!");
+                            if not keyBit2:
+                                print("You should go look somewhere else for the other bit.");
+                            else:
+                                print("You have all the bits! Let's go unlock that chest!");
+                            keyBit1 = True;
+                        else:
+                            print("Nothing. Maybe you need to look a little closer?");
                     else:
-                        print("You search around, but find nothing of value.\n\n");
+                        if random.randint(1,100) == 100:
+                            print("You search around the room, and find 1gp!\nLucky you!\n\n");
+                        else:
+                            print("You search around, but find nothing of value.\n\n");
                     pause();
                 elif userIn == 2:
                     currentRoom = 2;
                 elif userIn == 3:
                     if gotKey:
-                        print("Maybe Grÿla's key fits this chest.\n...\n\nHey, it worked! You peer into the chest...\n")
-                        pause();
-                        openFile = io.open('data\\winner.txt', 'r', encoding='utf8');
-                        print();
-                        GameOver(openFile.read());
+                        if keyBit1 and keyBit2: #EXPANDED CONTENT: Key's broke, fix it
+                            print("You hold the key and the 2 bits in place, and they magically fuse together! Neat!");
+                            print("Maybe now that you repaired the key, it fits this chest.\n...\n\nHey, it worked! You peer into the chest...\n")
+                            pause();
+                            openFile = io.open('data\\winner.txt', 'r', encoding='utf8');
+                            print();
+                            GameOver(openFile.read());
+                        elif keyBit1 or keyBit2:
+                            print("I don't think you can open a lock with a half-complete key.\nTry searching another searchable room.\n");
+                            pause();
+                        else:
+                            print("Time to find what Grÿla's been hiding!\n...\nHey, this key doesn't work! Looks like the 2 bits on the end have been snapped off, rendering it useless.\nMaybe if you search around the house, you could find them?\n");
+                            pause();
                     else:
                         print("The chest is locked tight. It's sturdy, too. No way you're getting into it without a key.")
                         pause();

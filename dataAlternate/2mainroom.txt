@@ -1,6 +1,6 @@
-You're in a large, barely lit room.
-A single messy table fills most of the left side, but the room is otherwise bare and dusty.
-Two windows peer out from the porch, giving a sullen view of the dark forest.
+You're in the large, dim room in the center of your hut.
+A single messy table fills most of the left side--your work table. Looks like that damned adventurer was picking around in your potioncraft notes. Ugh.
+Two windows peer out from the porch, giving a pleasant view of the dark forest.
 Opposing the windows on the back wall of the room are two doors.
 An occasional flicker of warm light slips past the edges of the left door (Room 3).
-The right door (Room 4) is eerily dark and quiet.
+The right door (Room 4) is comfortably dark and quiet.

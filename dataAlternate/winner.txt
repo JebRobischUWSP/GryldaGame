@@ -1,12 +1,12 @@
-You did it, you defeated Grÿla and claimed the treasure in her hut!
+You have successfully defeated the Adventurer and have taken back your beloved hut!
 
-In the chest was:
+Your chest (thankfully) still contains:
   Grÿla's Potion of Protection
     For 24 hours after consumption, the drinker 
     gains +1 to their AC and all saving throws.
   25 Gold Pieces
 
-Additionally, you gained 1/2 level of EXP! if you also completed "Mamo Nag: The Bully", you can mark yourself as being level 2.
+Additionally, you gained 1/2 level of EXP! If you took the time to have a pleasant chat with "Mamo Nag: The Bully", you can mark yourself as being level 2. Surprising you haven't gotten more XP yet, honestly.
 
 
 You Win!

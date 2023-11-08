@@ -6,7 +6,8 @@ import random
 random.seed()
 
 #Flags
-knownRooms = [None, True, False, False, False, False]; #Index corresponds to room number, once True, text will reflect knowlege of room behind door.
+knownRooms = [None, True, True, True, True, True]; #Index corresponds to room number, once True, text will reflect knowlege of room behind door.
+#ALTERNATE DIFFERENCE: Grylda already knows all the rooms; it's her house. Technically just a textual change
 tableSearched = False; # Gives +1 Bonus
 grylaConfronted = False;
 grylaPercieved = False;
@@ -82,7 +83,7 @@ def GetTravelActionText(roomId): # Checks if room (indicated by room number) is 
     return result + ' (Room ' + str(roomId) + ')';
 
 def DisplayTextData(fileName):
-    path = 'data\\' + fileName + '.txt';
+    path = 'dataAlternate\\' + fileName + '.txt';
     openFile = io.open(path, 'r', encoding='utf8');
     print(openFile.read());
     openFile.close();
@@ -90,7 +91,7 @@ def DisplayTextData(fileName):
 def KillGryl(message): #I didn't really need to make this a function, but I just came up with the pun and it was too good to pass up.
     global grylaDead, gotKey, gameState;
     print('\n' + message + '\n');
-    print("You have successfully overcame your fears and have beaten Grÿla!\nWhat's this? As she disintegrates, you notice a small, metal object. A key!\nYou should figure out what this unlocks before leaving. A witch as powerful as Grÿla must have something valuable lying around.\n");
+    print("You finally beat that mangy freeloading adventurer!\nWhat's this? As they lie crumpled on the floor, you notice a small, metal object fall out of their pocket. A key!\nYou should go check your bedroom chest! Hopefully that adventurer didn't use your special potion.\n");
     grylaDead = True; # I could've probably just used one flag for this, but whatever.
     gotKey = True;
     gameState = 0; # What's up with python and locally scoping global varibles in functions??? If I'm changing a global variable, I want to change a global variable.
@@ -112,17 +113,17 @@ try:
                 DisplayTextData('1porch');
                 DisplayTextData('1porchwindow'); #Why do we need this in a seperate file if it's exclusive to the porch scene?
                 print("You are currently on the Porch (Room 1)\n");
-                print(  FormatActions(GetTravelActionText(2), "Flee from the Hut (This is your only chance!)")  );
+                print(  FormatActions(GetTravelActionText(2), "Don't even bother; they'll tire and eventually leave your house (Flee)")  );
                 userIn = GetIntInput("Choose an action: ", 1, 2);
                 if userIn == 1:
                     currentRoom = 2;
                 elif userIn == 2:
-                    GameOver("Before even entering the hut, you turn and flee.\nGrÿla will continue to haunt your mind.\nGame Over!");
+                    GameOver("Instead of confonting that wretched squatter, you decide to wait it out nearby.\nYou're pretty sure you can hear them trashing up the place.\nDamn, should've intervened.\nGame Over!");
             elif currentRoom == 2:
                 DisplayTextData('2mainroom');
                 if not tableSearched:
                     print("A glimmer from the table catches your eye.\n\nYou are currently in the Central Room (Room 2)\n");
-                    print(  FormatActions(GetTravelActionText(3), GetTravelActionText(4), "Search the Messy Table")  );
+                    print(  FormatActions(GetTravelActionText(3), GetTravelActionText(4), "Search your Work Table")  );
                     userIn = GetIntInput("Choose an action: ", 1, 3);
                     if userIn == 1:
                         currentRoom = 3;
@@ -131,7 +132,7 @@ try:
                     elif userIn == 3:
                         tableSearched = True;
                         _ = os.system('cls');
-                        print("You found a small ring with a glowing enchanment!\nIt produces 5ft of dim light in a sphere around you when in unlit areas.\nIn turn, you get +1 to any attack rolls against enemies accustomed to dark environemnts.\n\n")
+                        print("Would you look at that, your lucky glowing ring!\nIt produces 5ft of dim light in a sphere around you when in unlit areas. It's also fashionable\nMight be good for landing more accurate punches on that courtesy-lacking freeloader.\n\n")
                         # This item is supposed to play into the facing your fears thing; a gift of light to help face your fear of the dark (with darkness as a theme here, I imagine one of the intended faced fears is of the dark)
                         pause();
                 else: # You can't search the table again. Sucks.
@@ -150,9 +151,9 @@ try:
                 if userIn == 1:
                     _ = os.system('cls');
                     if random.randint(1,100) == 100:
-                        print("You search around the room, and find 1gp! Lucky you!\n\n");
+                        print("You search around the room, and find 1gp!\nYou were wondering where that went!\n\n");
                     else:
-                        print("You search around, but find nothing of value.\n\n");
+                        print("You search around, but nothing's really changed since you left. Well, there's some muddy boot prints. Figures.\n\n");
                     pause();
                 elif userIn == 2:
                     currentRoom = 2;
@@ -166,7 +167,7 @@ try:
                 if userIn == 1:
                     _ = os.system('cls');
                     if random.randint(1,100) == 100: # Lucky penny!
-                        print("You search around the room, and find 1gp!\nLucky you!\n\n");
+                        print("You search around the room, and find 1gp!\nYou were wondering where that went!\n\n");
                     else:
                         print("You search around, but find nothing of value.\n\n");
                     pause();
@@ -174,13 +175,13 @@ try:
                     currentRoom = 2;
                 elif userIn == 3:
                     if gotKey:
-                        print("Maybe Grÿla's key fits this chest.\n...\n\nHey, it worked! You peer into the chest...\n")
+                        print("Alright, let's make sure you don't have to search that adventurer's pockets again.\n...\n\nThe lock clicks open. You peer into the chest...\n")
                         pause();
-                        openFile = io.open('data\\winner.txt', 'r', encoding='utf8');
+                        openFile = io.open('dataAlternate\\winner.txt', 'r', encoding='utf8');
                         print();
                         GameOver(openFile.read());
                     else:
-                        print("The chest is locked tight. It's sturdy, too. No way you're getting into it without a key.")
+                        print("Locked. Maybe the contents are still safe and sound?")
                         pause();
             elif currentRoom == 5:
                 if not grylaDead:
@@ -198,18 +199,18 @@ try:
                         print("What??? Huh??? How???");
         elif gameState == 1:
             if battleState == 0:
-                print("You are facing Grÿla, the witch of your nightmares!\n\n");
+                print("You are facing a scruffy, good-for-nothing adevnturer!\n\n");
                 if grylaConfronted and grylaPercieved:
-                    print("You have no other choice. You must fight her!\n");
-                    print(  FormatActions("Fight the Witch!", "It's no use; Run!")  );
+                    print("Crap, you have no other choice. You have to fight them!\n");
+                    print(  FormatActions("Fight them!", "Leave; you don't feel like actually FIGHTING the guy.")  );
                     userIn = GetIntInput("Choose an action: ", 1, 2);
                     if userIn == 1:
                         battleState = 1;
                         pause();
                         continue; # Reset game loop to switch to fighting state
                     elif userIn == 2:
-                        GameOver("With 2 failiures under your belt and little confidence in your ability to confront Grÿla, you turn tail and run.\nAs you burst out of the hut, you hear wicked cackling from the cellar.\nThis will not be the last you hear of this wicked witch.\nGAME OVER\n\nTip: Gryla is strong against pacifist techniques. Fighting is bound to be more effective, especially if you search around a bit beforehand.");
-                print(  FormatActions("Fight the Witch!", "Confront your fear!", "Look for her weaknesses!")  );
+                        GameOver("You sigh dejectedly and make your way back out of the cellar.\nWithin moments, you hear the sound of ransacking from the cellar.\nWell, you already made up your mind. Time to wait this hoodlum out.\nGAME OVER\n\nTip: Beating people up may convince them to leave your property.");
+                print(  FormatActions("Fight them!", "Scare them off!", "Talk them down.")  );
                 discluded = [] if not grylaConfronted else [2]; # Setup the disclude list in case players already did the other options. Much easier than writing out this section again for each permutation.
                 discluded += [] if not grylaPercieved else [3];
                 userIn = None;
@@ -218,38 +219,37 @@ try:
                     if userIn != None:
                         break;
                     else:
-                        print("That didn't work! You have to try something else.");
+                        print("That didn't work, knucklehead! You have to try something else.");
                 if userIn == 1:
-                    print("You ready your weapon... it's time to fight Grÿla head-on!\n");
+                    print("You ready your weapon... it's time to fight this gremlin head-on!\n");
                     battleState = 1;
                     pause(); #Bit janky of a way to do it, requiring a pause here, but otherwise players couldn't read this line, and there's not an easy way i can think of to switch states with an attack round
                 elif userIn == 2:
                     _ = os.system('cls');
-                    print("You don't fear her! You don't fear anything!\nYou yell out to Grÿla, confronting her with the power of your confidence!\n\n");
-                    input("Press Enter to roll for Intelligence.");
+                    print("This isn't their property! These aren't their belongings!\nYou yell at the adventurer, threatening grand retribution!\n\n");
+                    input("Press Enter to roll for Intimidation.");
                     plrDieMod, plrDie = RollD20();
                     grylaDieMod, grylaDie = RollD20(mod = 4);
                     print("\nYou rolled " + str(plrDieMod) + " (" + str(plrDie) + "+0)");
-                    print("Grÿla rolled " + str(grylaDieMod) + " (" + str(grylaDie) + "+4)");
+                    print("The Adventurer rolled " + str(grylaDieMod) + " (" + str(grylaDie) + "+4)");
                     if plrDieMod > grylaDieMod: #Note wording in assignment: "If the player rolls HIGHER", not higher or equal.
-                        KillGryl("You let it be known that you do not fear her! She has no power on you! She may be terrifying, but she cannot hurt you!\nHearing these words, Gryla siezes and slowly petrifies, crumbling to powerless ash.");
-                        # Get wicked witch of the west'd, gryllo! (Not really, it's to dust instead of melting, but whatever)
+                        KillGryl("You breate and belittle this perosn so hard, you start to feel a little bad for them.\nAs if struck by a power word: Kill, they crumple up on the floor, defeated by the pen.");
                     else:
-                        print("You try to convince her of your fearlessness, but it doesn't work.\nShe stands as haughtily as ever, confident in her grip over your mind.\n");
+                        print("You throw a couple of crude insults their way.\nThe adventurer cackles, makes a couple rude comments back, and readies their weapon.\nDrats.\n");
                         grylaConfronted = True;
                         pause();
                 elif userIn == 3:
                     _ = os.system('cls');
-                    print("You examine the witch a little more closely, trying to find any exploitable weaknesses.\n\n");
-                    input("Press Enter to roll for Empathy.");
+                    print("Maybe you could convince this person, however cruel their tresspassing may be, to just leave.\n\n");
+                    input("Press Enter to roll for Decpetion.");
                     plrDieMod, plrDie = RollD20();
                     grylaDieMod, grylaDie = RollD20(mod = -2);
                     print("\nYou rolled " + str(plrDieMod) + " (" + str(plrDie) + "+0)");
-                    print("Grÿla rolled " + str(grylaDieMod) + " (" + str(grylaDie) + "-2)");
+                    print("The Adventurer rolled " + str(grylaDieMod) + " (" + str(grylaDie) + "-2)");
                     if plrDieMod > grylaDieMod: #"If the player wins" is annoyingly vauge for a description that specified the exact operator ('>') only 3 sentences before
-                        KillGryl("Looking more closely, you notice that Gryla is unusually unwell. You ask her about her health, and she suddenly softens, claiming that she's been cursed to stay in the mortal plane, bound to cruelly haunt adventurers for centuries.\nYou know some curse-breaking! You offer to help, and she begrudgingly accepts.\nThe curse proves difficult to defeat, but you manage, and Gryla starts to fade, giving apologies for all the harm she's caused.");
+                        KillGryl("You have a \"polite intellectual conversation\" with the Adventurer, and come to the mutual conclusion that they shouldn't be messing with your things.\nThe adventurer apologises, goes to leave, and then trips on a small crack, crumpling to the floor. Looks like they may have gotten a concussion....\n\nWait a second... their pack is filled to the brim with your belongings! Lucky that scoundrel fell victim to his own lack of balance.");
                     else:
-                        print("Drats! You can't find anything particularly weak about her. You figure your best bet is to attack before she can get the upper hand.");
+                        print("The adventurer seems much more interested in keeping your belongings, it seems. Something about \"nasty old hag\". Maybe you need to try a different approach.");
                         grylaPercieved = True;
                         pause();
             elif battleState == 1:
@@ -262,28 +262,28 @@ try:
                     print("(!) You hit a devestating blow!");
                     grylaHealth = 0; # Max health 2, so don't even bother subtracting
                 elif plrDie <= 1: #Fail
-                    print("(!) You missed horribly! Grÿla's using this chance to heal!");
+                    print("(!) You missed horribly! The Adventurer takes this time to drink one of YOUR health potions!");
                     grylaHealth = 2;
                 elif plrDieMod >= 12: #Hit
-                    print("You hit her!");
+                    print("You hit them!");
                     grylaHealth -= 1;
                 else: #Miss
                     print("You missed.");
                 #Gryla's Turn
                 if grylaHealth <= 0: #End fight
-                    KillGryl("\nAs you hit Grÿla, she crumples on the ground, defeated.\nShe groans, and slowly fades to dust.");
+                    KillGryl("\nAs you give a good smack to the Adventurer, they crumple on the ground, defeated.\nYou might have broken one of their ribs... looks painful. Rightfully so!");
                 elif plrDie > 1: #Gryla attack (If not heal)
-                    print("\nGrÿla Goes in for the attack!");
+                    print("\nThe Adventurer Goes in for the attack!");
                     grylaDieMod, grylaDie = RollD20(mod = -4);
-                    print("She rolled " + str(grylaDieMod) + " (" + str(grylaDie) + "-4)");
+                    print("They rolled " + str(grylaDieMod) + " (" + str(grylaDie) + "-4)");
                     if grylaDieMod > 12:
-                        print("She hits you!\n");
+                        print("They hit you!\n");
                         playerHealth -= 1;
                     else:
-                        print("She Misses!\n");
+                        print("They Miss!\n");
                     pause();
                 if playerHealth <= 0:
-                    GameOver("You fall to the ground, bested by Grÿla's magical might.\nIn a panic, you scramble up the stairs and out the hut, but you're distraught knowing she will continue to haunt you.\nGAME OVER");
+                    GameOver("You fall to the ground, bested by that lucky sonnuva- ow.\nDefeatedly, you crawl up the stairs and out the hut. No way you can take on that hoodlum in your current state.\nFrom the hut, you hear the telltale sounds of ransacking. Just great.\nGAME OVER");
             else:
                 GameOver('ERROR: Game entered a nonexistant battleState, ' + str(battleState));
         else:
