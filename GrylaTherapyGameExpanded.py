@@ -131,11 +131,25 @@ try:
                     elif userIn == 2:
                         currentRoom = 4;
                     elif userIn == 3:
-                        tableSearched = True;
-                        _ = os.system('cls');
-                        print("You found a small ring with a glowing enchanment!\nIt produces 5ft of dim light in a sphere around you when in unlit areas.\nIn turn, you get +1 to any attack rolls against enemies accustomed to dark environemnts.\n\n")
-                        # This item is supposed to play into the facing your fears thing; a gift of light to help face your fear of the dark (with darkness as a theme here, I imagine one of the intended faced fears is of the dark)
-                        pause();
+                        if playerHealth <= 1:
+                            print("You'd rather not--you're already pretty hurt, and the table is a little treacherous.");
+                            pause();
+                            continue;
+                        print("You search around the table. It's a bit of a mess, and there's a lot of sharp instruments, but you might be able to find whatever's causing that glow...");
+                        input("Press Enter to roll for Constitution. ")
+                        plrDie, _ = RollD20();
+                        print("\nYou rolled " + str(plrDie));
+                        if plrDie > 8: # Now it's a risk-reward instead of an objectively good choice
+                            tableSearched = True;
+                            _ = os.system('cls');
+                            print("You found a small ring with a glowing enchanment!\nIt produces 5ft of dim light in a sphere around you when in unlit areas.\nIn turn, you get +1 to any attack rolls against enemies accustomed to dark environemnts.\n\n")
+                            # This item is supposed to play into the facing your fears thing; a gift of light to help face your fear of the dark (with darkness as a theme here, I imagine one of the intended faced fears is of the dark)
+                            pause();
+                        else:
+                            _ = os.system('cls');
+                            print("Ow! You cut yourself on one of the various broken flasks and poked your hand into a couple of dangerous-looking bits of metal.\nYou feel weaker than before. Best not to try that again.");
+                            playerHealth = 1;
+                            pause();
                 else: # You can't search the table again. Sucks.
                     print("You are currently in the Central Room (Room 2)\n");
                     print(  FormatActions(GetTravelActionText(3), GetTravelActionText(4))  );
@@ -154,7 +168,7 @@ try:
                     if gotKey and not keyBit2:
                         print("You search around for one of the missing key bits...\n");
                         input("Press Enter to roll for Perception. ")
-                        plrDie = RollD20();
+                        plrDie, _ = RollD20();
                         print("\nYou rolled " + str(plrDie));
                         if plrDie > 10:
                             print("A-ha! That's one of the bits!");
@@ -184,7 +198,7 @@ try:
                     if gotKey and not keyBit1:
                         print("You search around for one of the missing key bits...\n");
                         input("Press Enter to roll for Perception. ")
-                        plrDie = RollD20();
+                        plrDie, _ = RollD20();
                         print("\nYou rolled " + str(plrDie));
                         if plrDie > 10:
                             print("A-ha! That's one of the bits!");
