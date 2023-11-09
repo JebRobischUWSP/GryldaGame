@@ -112,7 +112,13 @@ try:
             knownRooms[currentRoom] = True; # gain knowlege of room
             if currentRoom == 1: #Open door or flee
                 DisplayTextData('1porch');
-                DisplayTextData('1porchwindow'); #Why do we need this in a seperate file if it's exclusive to the porch scene?
+                print('You try to look in from the outside...');
+                plrDie, _ = RollD20();
+                print("\nYou rolled " + str(plrDie));
+                if plrDie > 8:
+                    DisplayTextData('1porchwindow');
+                else:
+                    print("It's too dark to see into the hut. You have no idea what could be behind this door. Maybe it's Grÿla? That would be horrifying!"); 
                 print("You are currently on the Porch (Room 1)\n");
                 print(  FormatActions(GetTravelActionText(2), "Flee from the Hut (This is your only chance!)")  );
                 userIn = GetIntInput("Choose an action: ", 1, 2);
@@ -184,6 +190,7 @@ try:
                             print("You search around the room, and find 1gp!\nLucky you!\n\n");
                         else:
                             print("You search around, but find nothing of value.\n\n");
+                    pause();
                 elif userIn == 2:
                     currentRoom = 2;
                 elif userIn == 3:
